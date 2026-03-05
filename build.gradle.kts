@@ -47,7 +47,7 @@ dependencies {
     // Database
     implementation("org.postgresql:postgresql")
     implementation("org.flywaydb:flyway-core")
-    implementation("org.flywaydb:flyway-database-postgresql")
+    implementation("org.flywaydb:flyway-database-postgresql:10.18.0")
 
     // Scraping
     implementation("org.jsoup:jsoup:1.17.2")

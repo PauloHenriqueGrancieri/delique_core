@@ -39,8 +39,9 @@ class ScrapeSupplierPricesUseCase(
         val results = priceScraper.scrapeAll(requests)
 
         results.filter { it.success && it.scrapedPrice != null }.forEach { result ->
-            productSupplierRepository.findByProductIdAndSupplierId(0L, result.productSupplierId)
-                ?: productSupplierRepository.findBySupplierId(result.productSupplierId).firstOrNull()
+            val ps = productSupplierRepository.findById(result.productSupplierId) ?: return@forEach
+            ps.price = result.scrapedPrice
+            productSupplierRepository.save(ps)
         }
 
         return results

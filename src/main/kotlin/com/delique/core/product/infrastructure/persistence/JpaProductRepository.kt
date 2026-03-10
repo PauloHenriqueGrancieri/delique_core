@@ -28,6 +28,7 @@ interface JpaProductJpa : JpaRepository<Product, Long> {
 @Repository
 class ProductRepositoryAdapter(private val jpa: JpaProductJpa) : ProductRepository {
     override fun findById(id: Long)               = jpa.findById(id).orElse(null)
+    override fun findAllById(ids: Collection<Long>) = jpa.findAllById(ids)
     override fun findAll()                        = jpa.findAll()
     override fun findAllOrdered()                 = jpa.findAllByOrderByDisplayIdAsc()
     override fun search(query: String, p: Pageable) = jpa.searchByNameOrSku(query, p)

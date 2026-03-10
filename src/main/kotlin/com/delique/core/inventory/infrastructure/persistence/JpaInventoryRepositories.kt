@@ -79,6 +79,22 @@ interface JpaStockMovementJpa : JpaRepository<StockMovement, Long> {
         type: MovementType,
         @Param("variationOption") variationOption: ProductVariationOption?,
     ): List<StockMovement>
+
+    @Query(
+        """
+        SELECT sm FROM StockMovement sm
+        JOIN FETCH sm.product
+        WHERE sm.type = 'ENTRY'
+          AND sm.purchasePrice IS NOT NULL
+          AND sm.createdAt = (
+              SELECT MAX(sm2.createdAt) FROM StockMovement sm2
+              WHERE sm2.product = sm.product
+                AND sm2.type = 'ENTRY'
+                AND sm2.purchasePrice IS NOT NULL
+          )
+        """,
+    )
+    fun findLastPurchasePricePerProduct(): List<StockMovement>
 }
 
 @Repository
@@ -110,6 +126,8 @@ class StockMovementRepositoryAdapter(
         type: MovementType,
         variationOption: ProductVariationOption?,
     ) = jpa.findByProductAndTypeAndVariationOption(product, type, variationOption)
+
+    override fun findLastPurchasePricePerProduct() = jpa.findLastPurchasePricePerProduct()
 
     override fun delete(movement: StockMovement) = jpa.delete(movement)
     override fun deleteById(id: Long) = jpa.deleteById(id)

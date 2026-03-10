@@ -26,6 +26,9 @@ interface StockMovementRepository {
         variationOption: ProductVariationOption?,
     ): List<StockMovement>
 
+    /** Latest inbound movement with purchase price per product (for promotions). */
+    fun findLastPurchasePricePerProduct(): List<StockMovement>
+
     fun delete(movement: StockMovement)
     fun deleteById(id: Long)
 }

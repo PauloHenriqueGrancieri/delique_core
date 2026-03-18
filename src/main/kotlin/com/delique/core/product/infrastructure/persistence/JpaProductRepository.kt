@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository
 
 interface JpaProductJpa : JpaRepository<Product, Long> {
     fun findAllByOrderByDisplayIdAsc(): List<Product>
+    fun findByMinimumStockIsNotNull(): List<Product>
 
     @Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :q, '%')) OR LOWER(p.sku) LIKE LOWER(CONCAT('%', :q, '%'))")
     fun searchByNameOrSku(@Param("q") query: String, pageable: Pageable): Page<Product>
@@ -34,6 +35,7 @@ class ProductRepositoryAdapter(private val jpa: JpaProductJpa) : ProductReposito
     override fun delete(id: Long)                 = jpa.deleteById(id)
     override fun nextDisplayId()                  = jpa.nextDisplayId()
     override fun existsById(id: Long)             = jpa.existsById(id)
+    override fun findByMinimumStockIsNotNull()    = jpa.findByMinimumStockIsNotNull()
 }
 
 interface JpaBrandJpa : JpaRepository<Brand, Long> {
@@ -57,6 +59,9 @@ class BrandRepositoryAdapter(private val jpa: JpaBrandJpa) : BrandRepository {
 interface JpaCategoryJpa : JpaRepository<Category, Long> {
     fun findByName(name: String): Category?
     fun existsByName(name: String): Boolean
+
+    @Query("SELECT COALESCE(MAX(c.displayId), 0) + 1 FROM Category c")
+    fun nextDisplayId(): Int
 }
 
 @Repository
@@ -67,6 +72,19 @@ class CategoryRepositoryAdapter(private val jpa: JpaCategoryJpa) : CategoryRepos
     override fun save(category: Category)     = jpa.save(category)
     override fun delete(id: Long)             = jpa.deleteById(id)
     override fun existsByName(name: String)   = jpa.existsByName(name)
+    override fun nextDisplayId()              = jpa.nextDisplayId()
 }
 
-interface JpaVariationOptionJpa : JpaRepository<ProductVariationOption, Long>
+interface JpaVariationOptionJpa : JpaRepository<ProductVariationOption, Long> {
+    fun findByProduct_Id(productId: Long): List<ProductVariationOption>
+    fun findByProduct_IdAndId(productId: Long, id: Long): ProductVariationOption?
+}
+
+@Repository
+class ProductVariationOptionRepositoryAdapter(
+    private val jpa: JpaVariationOptionJpa,
+) : com.delique.core.product.domain.port.ProductVariationOptionRepository {
+    override fun findById(id: Long) = jpa.findById(id).orElse(null)
+    override fun findByProductId(productId: Long) = jpa.findByProduct_Id(productId)
+    override fun findByProductIdAndId(productId: Long, id: Long) = jpa.findByProduct_IdAndId(productId, id)
+}

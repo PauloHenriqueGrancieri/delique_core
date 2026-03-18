@@ -13,4 +13,5 @@ interface ProductRepository {
     fun delete(id: Long)
     fun nextDisplayId(): Int
     fun existsById(id: Long): Boolean
+    fun findByMinimumStockIsNotNull(): List<Product>
 }

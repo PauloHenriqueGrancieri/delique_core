@@ -9,4 +9,5 @@ interface CategoryRepository {
     fun save(category: Category): Category
     fun delete(id: Long)
     fun existsByName(name: String): Boolean
+    fun nextDisplayId(): Int
 }

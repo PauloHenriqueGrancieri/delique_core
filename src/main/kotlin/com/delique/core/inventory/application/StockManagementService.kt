@@ -16,6 +16,7 @@ import com.delique.core.product.domain.model.ProductVariationOption
 import com.delique.core.product.domain.port.ProductRepository
 import com.delique.core.product.domain.port.ProductVariationOptionRepository
 import org.slf4j.LoggerFactory
+import org.springframework.context.annotation.Lazy
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -38,7 +39,7 @@ class StockManagementService(
     private val productRepository: ProductRepository,
     private val variationOptionRepository: ProductVariationOptionRepository,
     private val stockDomainService: StockDomainService,
-    private val stockEntryPricingPort: StockEntryPricingPort,
+    @Lazy private val stockEntryPricingPort: StockEntryPricingPort,
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 

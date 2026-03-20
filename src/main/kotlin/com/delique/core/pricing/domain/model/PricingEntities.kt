@@ -1,4 +1,4 @@
-package com.delique.core.inventory.infrastructure.integration
+package com.delique.core.pricing.domain.model
 
 import com.delique.core.product.domain.model.Product
 import jakarta.persistence.*
@@ -6,35 +6,8 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @Entity
-@Table(name = "catalog")
-class CatalogEntry(
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false, unique = true)
-    var product: Product,
-
-    @Column(name = "cost_price", precision = 19, scale = 2)
-    var costPrice: BigDecimal? = null,
-
-    @Column(name = "sale_price", precision = 19, scale = 2, nullable = false)
-    var salePrice: BigDecimal = BigDecimal.ZERO,
-
-    @Column(name = "discount_percentage", precision = 5, scale = 2)
-    var discountPercentage: BigDecimal? = null,
-
-    @Column(name = "final_price", precision = 19, scale = 2, nullable = false)
-    var finalPrice: BigDecimal = BigDecimal.ZERO,
-
-    @Column(name = "in_catalog", nullable = false)
-    var inCatalog: Boolean = true,
-) {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0
-}
-
-@Entity
 @Table(name = "price_calculation_config")
-class PriceCalculationConfigRow(
+class PriceCalculationConfig(
     @Column(name = "default_cmv", precision = 19, scale = 2)
     var defaultCmv: BigDecimal = BigDecimal.ZERO,
 
@@ -67,12 +40,84 @@ class PriceCalculationConfigRow(
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0
+    var id: Long = 0
+}
+
+@Entity
+@Table(name = "payment_method_config")
+class PaymentMethodConfig(
+    @Column(name = "payment_method", nullable = false, unique = true, length = 50)
+    var paymentMethod: String,
+
+    @Column(name = "discount_percentage", precision = 5, scale = 2)
+    var discountPercentage: BigDecimal? = null,
+
+    @Column(name = "fee_percentage", precision = 5, scale = 2)
+    var feePercentage: BigDecimal? = null,
+) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long = 0
+}
+
+@Entity
+@Table(name = "credit_card_installment_fee")
+class CreditCardInstallmentFee(
+    @Column(nullable = false)
+    var installments: Int,
+
+    @Column(name = "fee_percentage", precision = 5, scale = 2)
+    var feePercentage: BigDecimal? = null,
+) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long = 0
+}
+
+enum class ABCClass { A, B, C }
+enum class XYZClass { X, Y, Z }
+
+@Entity
+@Table(name = "margin_strategies")
+class MarginStrategy(
+    @Column(name = "abc_faturamento", length = 1)
+    @Enumerated(EnumType.STRING)
+    var abcFaturamento: ABCClass? = null,
+
+    @Column(name = "abc_margem", length = 1)
+    @Enumerated(EnumType.STRING)
+    var abcMargem: ABCClass? = null,
+
+    @Column(name = "xyz_giro", length = 1)
+    @Enumerated(EnumType.STRING)
+    var xyzGiro: XYZClass? = null,
+
+    @Column(name = "suggested_margin_percentage", precision = 5, scale = 2, nullable = false)
+    var suggestedMarginPercentage: BigDecimal,
+
+    @Column(columnDefinition = "TEXT")
+    var description: String? = null,
+
+    @Column(name = "sort_order")
+    var sortOrder: Int? = null,
+
+    @Column(name = "is_active", nullable = false)
+    var isActive: Boolean = true,
+
+    @Column(name = "created_at", nullable = false)
+    var createdAt: LocalDateTime = LocalDateTime.now(),
+
+    @Column(name = "updated_at", nullable = false)
+    var updatedAt: LocalDateTime = LocalDateTime.now(),
+) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long = 0
 }
 
 @Entity
 @Table(name = "pending_price_calculations")
-class PendingPriceCalculationRow(
+class PendingPriceCalculation(
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false, unique = true)
     var product: Product,
@@ -94,5 +139,5 @@ class PendingPriceCalculationRow(
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0
+    var id: Long = 0
 }

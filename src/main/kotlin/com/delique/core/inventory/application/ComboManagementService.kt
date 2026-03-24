@@ -4,8 +4,8 @@ import com.delique.core.inventory.application.dto.*
 import com.delique.core.inventory.domain.model.Combo
 import com.delique.core.inventory.domain.model.ComboItem
 import com.delique.core.inventory.domain.port.ComboRepository
-import com.delique.core.inventory.infrastructure.integration.CatalogEntry
-import com.delique.core.inventory.infrastructure.integration.JpaCatalogEntryJpa
+import com.delique.core.catalog.domain.model.Catalog
+import com.delique.core.catalog.infrastructure.persistence.CatalogJpa
 import com.delique.core.inventory.infrastructure.integration.CatalogPricingSupport
 import com.delique.core.product.domain.model.Brand
 import com.delique.core.product.domain.model.Category
@@ -25,7 +25,7 @@ class ComboManagementService(
     private val productRepository: ProductRepository,
     private val categoryRepository: CategoryRepository,
     private val brandRepository: BrandRepository,
-    private val catalogJpa: JpaCatalogEntryJpa,
+    private val catalogJpa: CatalogJpa,
     private val stockManagementService: StockManagementService,
     private val catalogPricingSupport: CatalogPricingSupport,
 ) {
@@ -193,7 +193,7 @@ class ComboManagementService(
         productRepository.save(savedProduct)
         val finalPrice = computeFinalPrice(request.salePrice, request.discountPercentage)
         val costPrice = preview.totalCost
-        val catalog = CatalogEntry(
+        val catalog = Catalog(
             product = savedProduct,
             costPrice = costPrice,
             salePrice = request.salePrice,

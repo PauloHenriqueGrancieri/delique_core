@@ -12,7 +12,7 @@ data class CarouselRequestDto(
     val slots: List<CarouselSlotDto>,
 )
 
-/** Resposta mínima usada por price-calculation ao aprovar/salvar no catálogo */
+/** Minimal response used by price-calculation when approving/saving to the catalog. */
 data class CatalogDto(
     val id: Long? = null,
     val productId: Long,

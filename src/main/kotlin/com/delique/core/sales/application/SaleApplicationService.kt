@@ -42,8 +42,8 @@ class SaleApplicationService(
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
-    private fun getFeePercentage(paymentMethod: String, installments: Int): BigDecimal? =
-        try {
+    private fun getFeePercentage(paymentMethod: String, installments: Int): BigDecimal? {
+        return try {
             val method = paymentMethod.trim().uppercase()
             if (method == "CREDIT_CARD") {
                 val n = installments.coerceIn(1, 12)
@@ -56,6 +56,7 @@ class SaleApplicationService(
         } catch (_: Exception) {
             null
         }
+    }
 
     fun getAllOrders(): List<OrderDto> =
         customerOrderJpa.findAllWithSales().map { it.toDto() }

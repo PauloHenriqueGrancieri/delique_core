@@ -163,7 +163,7 @@ class PriceCalculationApplicationService(
         val product = productRepository.findById(productId) ?: return null
         val sales = saleLineJpa.findByProduct(product)
         if (sales.isEmpty()) {
-            return ProductAnalyticsResponse(productId, false, null, null, null, null, null, null, null)
+            return ProductAnalyticsResponse(productId, false, null, null, null, null, null, null)
         }
         val classification = productClassificationJpa.findByProductAndPeriodType(product, PeriodType.LAST_90_DAYS)
         val abcF = classification?.abcFaturamento?.name

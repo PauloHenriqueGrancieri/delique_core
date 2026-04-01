@@ -22,6 +22,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 interface JpaStockMovementJpa : JpaRepository<StockMovement, Long> {
     fun findByProduct(product: Product): List<StockMovement>
@@ -165,6 +166,22 @@ interface JpaPurchaseOrderJpa : JpaRepository<PurchaseOrder, Long> {
 
     @Query("SELECT DISTINCT o FROM PurchaseOrder o LEFT JOIN FETCH o.items ORDER BY o.createdAt DESC")
     fun findAllWithItemsDesc(): List<PurchaseOrder>
+
+    @Query(
+        "SELECT DISTINCT o FROM PurchaseOrder o LEFT JOIN FETCH o.items WHERE o.status = 'DELIVERED' AND o.deliveredAt >= :start AND o.deliveredAt <= :end",
+    )
+    fun findDeliveredBetween(
+        @Param("start") start: LocalDateTime,
+        @Param("end") end: LocalDateTime,
+    ): List<PurchaseOrder>
+
+    @Query(
+        "SELECT DISTINCT o FROM PurchaseOrder o LEFT JOIN FETCH o.items WHERE o.status = 'CANCELLED' AND o.cancelledAt >= :start AND o.cancelledAt <= :end",
+    )
+    fun findCancelledBetween(
+        @Param("start") start: LocalDateTime,
+        @Param("end") end: LocalDateTime,
+    ): List<PurchaseOrder>
 }
 
 @Repository
